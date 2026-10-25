@@ -1,0 +1,31 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="VB-FORM-VS-IDE-TEST-1"
+    Manufacturer="JasonScottCManalo12"
+    Version="1.0.0"
+    UpgradeCode="{B4D06A7B-2E41-4F10-A8C1-9B69D78E2A43}"
+    Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="MainFeature" Title="VB-FORM-VS-IDE-TEST-1" Level="1">
+      <ComponentGroupRef Id="ApplicationFiles" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="VB-FORM-VS-IDE-TEST-1" />
+    </StandardDirectory>
+
+    <ComponentGroup Id="ApplicationFiles" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="{8B2F71B1-14B0-4E63-91F1-5B0B78E72A51}">
+        <File
+          Id="ApplicationExe"
+          Source="$(var.PublishDir)\VB-FORM-VS-IDE-TEST-1.exe"
+          KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
