@@ -1,5 +1,7 @@
 # VB-FORM-VS-IDE-TEST-1
 
+> **README timestamp:** 2026-10-26 00:59:59 PHT (UTC+08:00)
+
 A workflow-based experiment to build and package a Visual Basic .NET Windows Forms application without opening the Visual Studio IDE on the developer's computer.
 
 ## Goal
