@@ -1,0 +1,44 @@
+name: Build VB.NET Windows Forms
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and publish Windows x64 app
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Show SDK information
+        run: dotnet --info
+
+      - name: Restore project
+        run: dotnet restore VB-FORM-VS-IDE-TEST-1.vbproj
+
+      - name: Build Release
+        run: dotnet build VB-FORM-VS-IDE-TEST-1.vbproj --configuration Release --no-restore
+
+      - name: Publish self-contained Windows x64 executable
+        run: dotnet publish VB-FORM-VS-IDE-TEST-1.vbproj --configuration Release --runtime win-x64 --self-contained true --output publish /p:PublishSingleFile=true
+
+      - name: Upload Windows x64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VB-FORM-VS-IDE-TEST-1-win-x64
+          path: publish/
+          if-no-files-found: error
+          retention-days: 14
