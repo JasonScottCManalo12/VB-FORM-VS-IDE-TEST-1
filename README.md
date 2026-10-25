@@ -1,15 +1,15 @@
 # VB-FORM-VS-IDE-TEST-1
 
-A disposable experiment to test whether a Visual Basic .NET Windows Forms application can be created, built, tested, and packaged by GitHub Actions without using the Visual Studio IDE on the developer's computer.
+A workflow-based experiment to build and package a Visual Basic .NET Windows Forms application without opening the Visual Studio IDE on the developer's computer.
 
 ## Goal
 
-Use GitHub as the source of truth and a Windows-hosted workflow as the build machine.
+Use GitHub as the source of truth and a Windows-hosted GitHub Actions runner as the build machine.
 
 - Keep the VB.NET source code in this repository.
-- Build the Windows Forms application with the .NET SDK on GitHub Actions.
-- Publish a downloadable Windows x64 executable as a workflow artifact.
-- Use workflow logs and build status to verify each step.
+- Restore, build, and publish the application remotely.
+- Package the Windows x64 app as both a self-contained executable and a Windows Installer `.msi` package.
+- Verify each stage using workflow logs and uploaded artifacts.
 
 ## Project
 
@@ -17,33 +17,53 @@ Use GitHub as the source of truth and a Windows-hosted workflow as the build mac
 - UI: Windows Forms
 - Target framework: .NET 8 for Windows
 - Build environment: GitHub Actions on `windows-latest`
-- IDE requirement on the developer's computer: None for the automated build
+- Installer technology: WiX Toolset 4
+- Developer PC requirement for automated builds: No Visual Studio IDE required
 
-This experiment does **not** claim that Windows Forms can run natively on Linux, Android, or in a web browser. The Windows Forms application runs on Windows. GitHub's Windows runner compiles and packages it remotely.
+This application is Windows-only. It does **not** run natively as a Windows Forms app on Linux, Android, or in a web browser. GitHub's Windows runner builds and packages it remotely.
 
 ## Run the workflow
 
-1. Open the **Actions** tab in this repository.
+1. Open the [Actions tab](https://github.com/JasonScottCManalo12/VB-FORM-VS-IDE-TEST-1/actions).
 2. Select **Build VB.NET Windows Forms**.
-3. Choose **Run workflow** to start it manually, or push a change to the `main` branch.
-4. Open the completed run and inspect the build/publish logs.
-5. Download the `VB-FORM-VS-IDE-TEST-1-win-x64` artifact.
+3. Choose **Run workflow**, or push a change to `main`.
+4. Open the completed run and inspect the build, publish, and MSI packaging logs.
+5. Download the artifact you need.
+
+The workflow uploads two artifacts:
+
+- `VB-FORM-VS-IDE-TEST-1-win-x64` — published application files.
+- `VB-FORM-VS-IDE-TEST-1-msi` — Windows Installer package.
 
 The workflow also runs for pull requests targeting `main`.
 
-## Current milestone
+## MSI installer behavior
 
-**Milestone 1 — Minimal application and automated Windows build.**
+The WiX installer is configured for 64-bit Windows and per-machine installation. It installs the self-contained application executable under Program Files. Windows may request administrator approval. The MSI uses a stable UpgradeCode to support future major-version upgrades when the package version is incremented.
 
-Success criteria:
-- [ ] Workflow starts successfully.
-- [ ] .NET restore and Release build pass.
-- [ ] Self-contained Windows x64 publish succeeds.
-- [ ] Downloadable artifact is attached to the workflow run.
-- [ ] The executable is downloaded and tested on a Windows PC.
+The current installer is a minimal proof of concept: it installs the app executable but does not yet create a Start Menu or desktop shortcut. The MSI must be tested on a Windows PC before it is considered production-ready.
+
+## Milestones
+
+### Milestone 1 — Minimal app and automated Windows build
+
+- [x] Workflow starts successfully.
+- [x] .NET restore and Release build pass.
+- [x] Self-contained Windows x64 publish succeeds.
+- [x] A downloadable executable artifact is produced.
+- [ ] Download and test the executable on a Windows PC.
+
+### Milestone 2 — MSI packaging
+
+- [x] Add a WiX installer definition.
+- [x] Add an automated MSI packaging step.
+- [x] Configure an MSI artifact upload.
+- [ ] Confirm the GitHub Actions workflow completes successfully with the MSI step.
+- [ ] Download and test MSI installation and uninstallation on a Windows PC.
 
 ## Important notes
 
-- The workflow builds the source committed to this repository; it does not magically generate arbitrary applications from a plain-language request yet.
-- Self-contained publishing bundles the .NET runtime with the app, but the output is still a Windows application and must be tested on Windows.
-- This repository is an experiment. Do not store secrets, signing keys, or personal data in source control.
+- The workflow builds the source committed to this repository; it does not yet generate arbitrary applications from plain-language requests.
+- Self-contained publishing bundles the .NET runtime with the app, but the result is still a Windows application.
+- The MSI is not digitally signed in this experiment, so Windows SmartScreen or security software may display warnings.
+- Do not store secrets, signing keys, or personal data in source control.
