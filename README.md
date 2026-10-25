@@ -39,6 +39,17 @@ The workflow uploads two artifacts:
 
 The workflow also runs for pull requests targeting `main`.
 
+## Automated GitHub Releases
+
+Pushing a version tag that starts with `v` (for example, `v0.1.0`) triggers the same Windows build. If the build and MSI packaging succeed, a second job creates a GitHub Release and attaches these direct downloads:
+
+- `VB-FORM-VS-IDE-TEST-1.exe` — self-contained Windows x64 application.
+- `VB-FORM-VS-IDE-TEST-1.msi` — Windows installer.
+
+Ordinary pushes to `main`, pull requests, and manual workflow runs do **not** publish a release. Releases are created only from version tags. The release job has write permission only for publishing the release; the build job retains read-only repository permissions.
+
+To make a release, create and push a version tag such as `v0.1.0` from the commit you want to ship. Monitor the [Actions tab](https://github.com/JasonScottCManalo12/VB-FORM-VS-IDE-TEST-1/actions); when both jobs succeed, the release will appear on the [Releases page](https://github.com/JasonScottCManalo12/VB-FORM-VS-IDE-TEST-1/releases).
+
 ## MSI installer behavior
 
 The WiX installer is configured for 64-bit Windows and per-machine installation. It installs the self-contained application executable under Program Files. Windows may request administrator approval. The MSI uses a stable UpgradeCode to support future major-version upgrades when the package version is incremented.
