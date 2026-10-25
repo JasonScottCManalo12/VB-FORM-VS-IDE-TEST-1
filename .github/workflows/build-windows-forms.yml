@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build and publish Windows x64 app
+    name: Build, publish, and package Windows x64 app
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -35,10 +35,27 @@ jobs:
       - name: Publish self-contained Windows x64 executable
         run: dotnet publish VB-FORM-VS-IDE-TEST-1.vbproj --configuration Release --runtime win-x64 --self-contained true --output publish /p:PublishSingleFile=true
 
-      - name: Upload Windows x64 artifact
+      - name: Install WiX Toolset CLI
+        run: dotnet tool install --global wix --version 4.0.5
+
+      - name: Build MSI installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force installer | Out-Null
+          wix build Installer.wxs -arch x64 -d PublishDir=publish -o installer/VB-FORM-VS-IDE-TEST-1.msi
+
+      - name: Upload Windows x64 executable artifact
         uses: actions/upload-artifact@v4
         with:
           name: VB-FORM-VS-IDE-TEST-1-win-x64
           path: publish/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload MSI installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VB-FORM-VS-IDE-TEST-1-msi
+          path: installer/VB-FORM-VS-IDE-TEST-1.msi
           if-no-files-found: error
           retention-days: 14
